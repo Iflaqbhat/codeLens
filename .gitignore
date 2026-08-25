@@ -1,0 +1,21 @@
+node_modules/
+dist/
+*.db
+.env
+backend/prisma/dev.db
+backend/prisma/dev.db-journal
+
+# frontend
+frontend/dist/
+
+# sandbox
+backend/sandbox/node_modules/
+
+# personal documents — never public
+resume_arva_ai.tex
+resume_iflaq_2026.tex
+*.tex
+.DS_Store
+
+# sandbox runtime
+sandbox/input.json
