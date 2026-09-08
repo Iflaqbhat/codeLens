@@ -19,3 +19,7 @@ resume_iflaq_2026.tex
 
 # sandbox runtime
 sandbox/input.json
+
+# fs-todo-app runtime data
+fs-todo-app/todos.json
+fs-todo-app/server.log

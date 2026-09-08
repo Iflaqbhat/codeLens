@@ -1,0 +1,12 @@
+{
+  "name": "fs-todo-app",
+  "version": "1.0.0",
+  "description": "Filesystem-based todo app from the 100xDevs Intro to HTTP assignment",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.22.2"
+  }
+}
