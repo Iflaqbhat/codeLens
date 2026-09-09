@@ -23,3 +23,6 @@ sandbox/input.json
 # fs-todo-app runtime data
 fs-todo-app/todos.json
 fs-todo-app/server.log
+
+# auth-demo runtime data
+auth-demo/server.log
