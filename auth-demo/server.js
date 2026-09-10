@@ -1,80 +1,56 @@
-const express=require('express');
-const app=express();
-const bcrypt=require('bcrypt');
-const jwt=require('jsonwebtoken');
-const port=3000;
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const cors = require('cors');
+
+const app = express();
+const SECRET = 'secretkey';
+
 app.use(express.json());
-const users=[];
-const todos=[];
-const jwtSecret='secretkey';
+app.use(cors());
 
-app.post('/signup', async(req,res)=>{
-    const{name,email,password}=req.body;
-    if(!name || !email || !password){
-        return res.status(400).json({message:"All fields are required"});
-    }
-    const userexists= users.find(user=>user.email===email);
-    if(userexists){
-        return res.status(400).json({message:"User already exists"});
-    }
-    const hashedPassword= await bcrypt.hash(password,10);
-    const user={name,email,password:hashedPassword};
-    users.push(user);
-    //send token
-    const token=jwt.sign({email},jwtSecret,{expiresIn:'1h'});
-    res.status(201).json({message:"User created successfully",token});
-})
+const users = [];
 
-app.post('/login',async(req,res)=>{
-    const{email,password}=req.body;
-    if(!email || !password){
-        return res.status(400).json({message:"All fields are required"});
-    }
-    const user=users.find(user=>user.email===email);
-    if(!user){
-        return res.status(400).json({message:"User does not exist"});
-    }
-    const isPasswordValid= await bcrypt.compare(password,user.password);
-    if(!isPasswordValid){
-        return res.status(400).json({message:"Invalid password"});
-    }
+app.post('/signup', async (req, res) => {
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) return res.status(400).json({ message: 'All fields are required' });
+  if (users.find(u => u.email === email)) return res.status(409).json({ message: 'User already exists' });
+  const user = { name, email, password: await bcrypt.hash(password, 10), todos: [] };
+  users.push(user);
+  const token = jwt.sign({ email }, SECRET, { expiresIn: '1h' });
+  res.status(201).json({ message: 'User created', token });
+});
 
-    //send token
-    const token=jwt.sign({email},jwtSecret,{expiresIn:'1h'});
-    res.status(200).json({message:"Login successful",token});
-})
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  const user = users.find(u => u.email === email);
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+  const token = jwt.sign({ email }, SECRET, { expiresIn: '1h' });
+  res.json({ message: 'Login success', token });
+});
 
-function authenticateToken(req,res,next){
-    const authHeader=req.headers['authorization'];
-    const token=authHeader && authHeader.split(' ')[1];
-    if(!token){
-        return res.status(401).json({message:"Token not found"});
-    }
-    jwt.verify(token,jwtSecret,(err,user)=>{
-        if(err){
-            return res.status(403).json({message:"Invalid token"});
-        }
-        req.user=user;
-        next();
-    })
+function auth(req, res, next) {
+  const token = (req.headers.authorization || '').split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'No token' });
+  try {
+    req.user = jwt.verify(token, SECRET);
+    next();
+  } catch {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
 }
 
-app.post('/todos',authenticateToken,(req,res)=>{
-    const{title,description}=req.body;
-    if(!title || !description){
-        return res.status(400).json({message:"All fields are required"});
-    }
-    const todo={title,description,email:req.user.email};
-    todos.push(todo);
-    res.status(201).json({message:"Todo created successfully",todo});
-})
+app.get('/todos', auth, (req, res) => {
+  const user = users.find(u => u.email === req.user.email);
+  res.json(user.todos);
+});
 
-app.get('/todos',authenticateToken,(req,res)=>{         
-    const userTodos=todos.filter(todo=>todo.email===req.user.email);
-    res.status(200).json({todos:userTodos});
-})
+app.post('/todos', auth, (req, res) => {
+  const user = users.find(u => u.email === req.user.email);
+  user.todos.push({ title: req.body.title, description: req.body.description });
+  res.status(201).json({ message: 'Todo added' });
+});
 
-app.listen(port,()=>{
-    console.log(`Server running on port ${port}`);
-})
-//is it good?
+app.listen(3000, () => console.log('Server on port 3000'));
