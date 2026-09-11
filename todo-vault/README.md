@@ -74,6 +74,8 @@ npm install
 npm start                   # → http://localhost:3000
 ```
 
+The frontend talks to the backend through Vite's dev proxy — all `/auth` and `/todos` requests on port 5173 are forwarded to port 3000, so no CORS is needed in development.
+
 **3. Start the frontend:**
 
 ```bash

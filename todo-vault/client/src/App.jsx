@@ -2,7 +2,7 @@ import { useState } from 'react';
 import AuthPage from './components/AuthPage.jsx';
 import Dashboard from './components/Dashboard.jsx';
 
-const API = 'http://localhost:3000';
+const API = '';
 
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
