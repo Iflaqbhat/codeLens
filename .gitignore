@@ -31,3 +31,10 @@ auth-demo/vite.log
 # auth-demo react client
 auth-demo/client/node_modules/
 auth-demo/client/dist/
+
+# todovault runtime data
+todo-vault/server/.env
+todo-vault/server.log
+todo-vault/server/server.log
+todo-vault/client/node_modules/
+todo-vault/client/dist/
