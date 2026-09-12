@@ -24,6 +24,12 @@ h1 {
   margin-bottom: 16px;
 }
 
+.stats {
+  color: #818cf8;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
 input {
   width: 100%;
   padding: 12px;

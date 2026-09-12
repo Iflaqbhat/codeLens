@@ -5,10 +5,20 @@ export default function Dashboard({ token, username, onLogout, API }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
+  const [stats, setStats] = useState(null);
 
   useEffect(() => {
     getTodos();
+    getStats();
   }, []);
+
+  async function getStats() {
+    const res = await fetch(`${API}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (res.ok) setStats(data);
+  }
 
   async function getTodos() {
     const res = await fetch(`${API}/todos`, {
@@ -66,6 +76,11 @@ export default function Dashboard({ token, username, onLogout, API }) {
         <div>
           <h1>Hello, {username}</h1>
           <p className="subtitle">Your personal todo list, protected by JWT</p>
+          {stats && (
+            <p className="stats">
+              {stats.todoCount} todos · {stats.doneCount} done
+            </p>
+          )}
         </div>
         <button className="link" onClick={onLogout}>
           Log out

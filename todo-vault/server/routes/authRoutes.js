@@ -1,10 +1,27 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const auth = require('../middleware/auth');
 const User = require('../models/User');
 const { signupSchema, loginSchema } = require('../validation/schemas');
 
 const router = express.Router();
+
+router.get('/me', auth, async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json({
+      username: user.username,
+      email: user.email,
+      todoCount: user.todos.length,
+      doneCount: user.todos.filter((t) => t.done).length,
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching profile' });
+  }
+});
 
 router.post('/signup', async (req, res) => {
   try {
