@@ -18,6 +18,18 @@ app.get('/', (req, res) => {
   res.json({ message: 'TodoVault API is running' });
 });
 
+// 404 catch-all — runs only if no route above matched
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// Error-handling middleware — must have 4 args; runs on any thrown error
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ message: 'Internal server error' });
+});
+
 mongoose.connect(process.env.MONGO_URL)
   .then(() => {
     console.log('Connected to MongoDB');
