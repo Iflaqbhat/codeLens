@@ -70,6 +70,15 @@ export default function Dashboard({ token, username, onLogout, API }) {
     if (res.ok) setTodos(data.todos);
   }
 
+  async function clearCompleted() {
+    const res = await fetch(`${API}/todos/clear`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (res.ok) setTodos(data.todos);
+  }
+
   return (
     <div className="dashboard">
       <header>
@@ -122,6 +131,12 @@ export default function Dashboard({ token, username, onLogout, API }) {
           </li>
         ))}
       </ul>
+
+      {todos.some((t) => t.done) && (
+        <button className="link danger-text" onClick={clearCompleted}>
+          Clear completed
+        </button>
+      )}
     </div>
   );
 }

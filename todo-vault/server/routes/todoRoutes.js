@@ -34,6 +34,24 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+router.put('/clear', auth, async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // $pull removes every sub-document where done is true
+    await User.updateOne(
+      { _id: user._id },
+      { $pull: { todos: { done: true } } }
+    );
+
+    const updated = await User.findOne({ email: req.user.email });
+    res.json({ message: 'Cleared completed todos', todos: updated.todos });
+  } catch (err) {
+    res.status(500).json({ message: 'Error clearing todos' });
+  }
+});
+
 router.put('/:id/toggle', auth, async (req, res) => {
   try {
     const user = await User.findOne({ email: req.user.email });

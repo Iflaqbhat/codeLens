@@ -81,6 +81,10 @@ button.danger:hover {
   background: #b91c1c;
 }
 
+button.danger-text {
+  color: #f87171;
+}
+
 .auth-card,
 .dashboard {
   width: 100%;
